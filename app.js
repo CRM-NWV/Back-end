@@ -3,22 +3,20 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 const mentorRoutes = require('./routes/mentorRoutes');
-const fs = require('fs'); // fs modulini import qilish
+const fs = require('fs');
 const path = require('path');
-const cors = require('cors'); // CORS ni import qilish
+const cors = require('cors');
 
 dotenv.config();
 const app = express();
 
-// CORS middleware’ni qo‘shish
-app.use(cors()); // Barcha originlardan so‘rov qabul qilinadi
-
-// Agar faqat ma’lum bir origin (masalan, frontend) dan so‘rov qabul qilmoqchi bo‘lsangiz:
-// app.use(cors({
-//     origin: 'http://localhost:3000', // Frontend manzili (yoki production domeni)
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Ruxsat berilgan metodlar
-//     allowedHeaders: ['Content-Type', 'Authorization'], // Ruxsat berilgan header’lar
-// }));
+// CORS middleware’ni aniq sozlash
+app.use(cors({
+    origin: 'http://localhost:5173', // Frontend manzili
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // Agar autentifikatsiya yoki cookie kerak bo‘lsa
+}));
 
 // Middleware
 app.use(express.json());
@@ -36,7 +34,6 @@ app.use('/api/mentors', mentorRoutes);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server ${PORT} portida ishlamoqda`);
-    // uploads papkasi mavjudligini tekshirish
     const uploadsDir = path.join(__dirname, 'uploads');
     if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir);
